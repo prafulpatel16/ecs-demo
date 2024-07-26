@@ -1,19 +1,21 @@
 {
-    "family": "simple-html-web-app-task",
+    "family": "ecs-task-def",
+    "taskRoleArn": "arn:aws:iam::739313151559:role/ecsTaskExecutionRole",
+    "executionRoleArn": "arn:aws:iam::739313151559:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
     "containerDefinitions": [
       {
-        "name": "simple-html-web-app-container",
-        "image": "739313151559.dkr.ecr.us-eat-1.amazonaws.com/simple-html-web-app:latest",
+        "name": "simple-html-web-app",
+        "image": "REPLACE_WITH_IMAGE_TAG",
+        "cpu": 256,
+        "memory": 512,
         "essential": true,
         "portMappings": [
           {
             "containerPort": 80,
             "hostPort": 80
           }
-        ],
-        "memory": 512,
-        "cpu": 256
+        ]
       }
     ],
     "requiresCompatibilities": [
@@ -21,5 +23,12 @@
     ],
     "cpu": "256",
     "memory": "512",
-    "executionRoleArn": "arn:aws:iam::739313151559:role/ecsTaskExecutionRole"
-}
+    "networkConfiguration": {
+      "awsvpcConfiguration": {
+        "subnets": ["subnet-0d6c9b0376d629d40","subnet-0c0280d4a76d6b363"],
+        "securityGroups": ["sg-08d0d1481a84336f0"],
+        "assignPublicIp": "ENABLED"
+      }
+    }
+  }
+  
