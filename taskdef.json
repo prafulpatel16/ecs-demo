@@ -5,7 +5,7 @@
     "networkMode": "awsvpc",
     "containerDefinitions": [
       {
-        "name": "simple-html-web-app-container", 
+        "name": "ecs-container1", 
         "image": "REPLACE_WITH_IMAGE_TAG",
         "cpu": 256,
         "memory": 512,
