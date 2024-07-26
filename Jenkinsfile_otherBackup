@@ -10,8 +10,6 @@ pipeline {
         IMAGE_TAG = "latest-${env.BUILD_NUMBER}" // Unique tag for each build
         ECS_CLUSTER = 'simple-html-web-app-cluster'
         ECS_SERVICE = 'ecs-demo-srv'
-        TASK_DEF_ARN = 'arn:aws:ecs:us-east-1:739313151559:task-definition/ecs-task-def:1'
-        EXEC_ROLE_ARN = 'arn:aws:iam::739313151559:role/ecsTaskExecutionRole'
     }
     
     stages {
@@ -52,56 +50,31 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Get SHA1 of the current commit
-                    def commit_id = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-                    
-                    // Build the Docker image
-                    sh "docker build -t ${ECR_REPO_URI}:${commit_id} ."
+                    dockerImage = docker.build("${ECR_REPO}:${IMAGE_TAG}")
                 }
             }
         }
         
-        stage('Push Image to ECR') {
+        stage('Push Docker Image to ECR') {
             steps {
                 script {
-                    def commit_id = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
                     withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "${REGISTRY_CREDENTIAL}"]]) {
                         sh """
-                        docker push ${ECR_REPO_URI}:${commit_id}
-                        docker rmi -f ${ECR_REPO_URI}:${commit_id}
+                        docker tag ${ECR_REPO}:${IMAGE_TAG} ${ECR_REPO_URI}:${IMAGE_TAG}
+                        docker push ${ECR_REPO_URI}:${IMAGE_TAG}
                         """
                     }
                 }
             }
         }
         
-        stage('Deploy') {
+        stage('Deploy to ECS') {
             steps {
                 script {
-                    def commit_id = sh(script: "git rev-parse --short HEAD", returnStdout: true).trim()
-                    
-                    // Check if taskdef.json exists
-                    def taskdef_exists = fileExists 'taskdef.json'
-                    
-                    if (taskdef_exists) {
-                        // Override image field in taskdef file
-                        sh "sed -i 's|{{image}}|${ECR_REPO_URI}:${commit_id}|' taskdef.json"
-                        
-                        // Create a new task definition revision
-                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "${REGISTRY_CREDENTIAL}"]]) {
-                            sh """
-                            aws ecs register-task-definition --execution-role-arn ${EXEC_ROLE_ARN} --cli-input-json file://taskdef.json --region ${AWS_REGION}
-                            """
-                        }
-                        
-                        // Update service on ECS
-                        withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "${REGISTRY_CREDENTIAL}"]]) {
-                            sh """
-                            aws ecs update-service --cluster ${ECS_CLUSTER} --service ${ECS_SERVICE} --task-definition ${TASK_DEF_ARN} --region ${AWS_REGION}
-                            """
-                        }
-                    } else {
-                        error "taskdef.json file not found"
+                    withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: "${REGISTRY_CREDENTIAL}"]]) {
+                        sh """
+                        aws ecs update-service --cluster ${ECS_CLUSTER} --service ${ECS_SERVICE} --force-new-deployment
+                        """
                     }
                 }
             }
