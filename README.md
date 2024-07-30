@@ -416,3 +416,49 @@ EC2ContainerRegistryReadOnly
 }
 ![alt text](image.png)
 
+
+
+
+
+
+
+
+Load Test on ECS
+
+To perform load testing on an ALB web URL from an Amazon Linux 2 AMI, you can use Apache Benchmark (ab) and wrk. Below are the detailed steps for installing and using these tools on Amazon Linux 2.
+
+Using Apache Benchmark (ab)
+Step 1: Install Apache Benchmark
+Log in to your Amazon Linux 2 instance.
+Update the package repository and install Apache Benchmark:
+bash
+Copy code
+sudo yum update -y
+sudo yum install httpd-tools -y
+Step 2: Run Apache Benchmark
+Run a basic load test:
+bash
+Copy code
+ab -n 1000 -c 50 http://your-alb-url/
+-n 1000: The number of requests to perform.
+-c 50: The number of multiple requests to perform at a time.
+http://your-alb-url/: Replace with your ALB URL.
+Increase the load:
+To create more stress, you can increase the number of requests and concurrency level:
+
+bash
+Copy code
+ab -n 10000 -c 200 http://your-alb-url/
+-n 10000: The number of requests to perform.
+-c 200: The number of multiple requests to perform at a time.
+
+
+
+
+
+
+
+
+
+
+
