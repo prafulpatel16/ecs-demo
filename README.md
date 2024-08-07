@@ -14,13 +14,46 @@ This document provides a comprehensive guide for deploying a Docker application 
 AWS Account: Ensure you have an active AWS account.
 Docker: Install Docker on your local machine.
 AWS CLI: Install and configure the AWS CLI.
+AWS IAM Role: Create an IAM role with permissions for ECS, ECR, and other related services.
 Jenkins: Install Jenkins on your local machine or use a Jenkins server.
 Git Repository: Set up a Git repository (e.g., GitHub, GitLab).
-AWS IAM Role: Create an IAM role with permissions for ECS, ECR, and other related services.
+
 
 ## AWS Setup
 
-### 1. Create an ECR Repository
+### 1. Create an ECS Service Role
+
+1. Repeat the steps above to create a role with the necessary policies to allow ECS to interact with other AWS services (e.g., CloudWatch, ELB).
+
+![alt text](image-1.png)
+
+Create JSON Policy:  EC2ContainerRegistryReadOnly
+
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Effect": "Allow",
+			"Action": [
+				"ecr:BatchCheckLayerAvailability",
+				"ecr:BatchGetImage",
+				"ecr:DescribeRepositories",
+				"ecr:GetDownloadUrlForLayer",
+				"ecr:ListImages",
+				"ecr:DescribeImages",
+				"ecr:GetRepositoryPolicy",
+				"ecr:DescribeImageScanFindings",
+				"ecr:ListTagsForResource",
+				"ecr:DescribeRegistry",
+				"ecr:GetAuthorizationToken"
+			],
+			"Resource": "*"
+		}
+	]
+}
+
+
+### 2. Create an ECR Repository
 
 1. Navigate to the [Amazon ECR console](https://console.aws.amazon.com/ecr).
 2. Click **Create repository**.
@@ -28,7 +61,7 @@ AWS IAM Role: Create an IAM role with permissions for ECS, ECR, and other relate
 4. Click **Create repository**.
 
 
-### 2. Create an ECS Cluster
+### 3. Create an ECS Cluster
 
 1. Navigate to the [Amazon ECS console](https://console.aws.amazon.com/ecs).
 2. Click **Create cluster**.
@@ -36,7 +69,7 @@ AWS IAM Role: Create an IAM role with permissions for ECS, ECR, and other relate
 4. Enter a cluster name (e.g., `simple-html-web-app-cluster`).
 5. Click **Create**.
 
-### 3. Create an ECS Task Execution Role
+### 4. Create an ECS Task Execution Role
 
 1. Navigate to the [IAM console](https://console.aws.amazon.com/iam).
 2. Click **Roles** and then **Create role**.
@@ -45,9 +78,6 @@ AWS IAM Role: Create an IAM role with permissions for ECS, ECR, and other relate
 5. Click **Next: Tags**, then **Next: Review**.
 6. Enter a role name (e.g., `ecsTaskExecutionRole`) and click **Create role**.
 
-### 4. Create an ECS Service Role
-
-1. Repeat the steps above to create a role with the necessary policies to allow ECS to interact with other AWS services (e.g., CloudWatch, ELB).
 
 ## Jenkins Configuration
 
