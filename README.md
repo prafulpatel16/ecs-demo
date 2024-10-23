@@ -1,10 +1,10 @@
-https://repost.aws/questions/QU9F_AytI2TdiWImN1YVed8Q/deploy-an-ecs-fargate-task-with-a-new-image
 
-Here’s a detailed Markdown (`.md`) document for deploying a Docker application to AWS ECS and ECR using Jenkins. This document covers all the necessary steps, from setting up your AWS environment to configuring Jenkins and deploying your application.
+# AWS ECS and ECR Project Deployment Documentation
 
----
+## 📄 [Detailed Project Documentation Steps 👆](https://praful.cloud/aws-ecs-project)
 
-# AWS ECS and ECR Deployment Documentation
+![AWS Blogs- Thumbnail -11200 X 644](https://github.com/user-attachments/assets/00288d21-4250-4a91-9361-ce71992e1942)
+
 
 ## Overview
 
